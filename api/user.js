@@ -1,6 +1,5 @@
 export default async function handler(req, res) {
 
-  // 🔥 CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -25,11 +24,15 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const userId = data.data[0]?.id;
 
-    if (!userId) {
+    const user = data.data[0];
+    if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
+
+    const userId = user.id;
+    const displayName = user.displayName;
+    const name = user.name;
 
     const avatarRes = await fetch(
       `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=420x420&format=Png&isCircular=false`
@@ -39,6 +42,8 @@ export default async function handler(req, res) {
 
     res.status(200).json({
       userId,
+      username: name,
+      displayName,
       imageUrl: avatarData.data[0].imageUrl
     });
 
